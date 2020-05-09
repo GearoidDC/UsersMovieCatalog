@@ -5,6 +5,9 @@ import com.example.moviecatalogservice.models.CatalogItem;
 import com.example.moviecatalogservice.models.Rating;
 import com.example.moviecatalogservice.models.Movie;
 import com.example.moviecatalogservice.models.UserRating;
+import com.example.moviecatalogservice.services.MovieInfo;
+import com.example.moviecatalogservice.services.UserRatingInfo;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,29 +34,23 @@ public class MovieCatalogResources {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
+    @Autowired
+    MovieInfo movieInfo;
+
+    @Autowired
+    UserRatingInfo userRatingInfo;
+
+
     @RequestMapping("/{userId}")
     public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
+
     // Get all rated movie IDs
-    UserRating ratings = restTemplate.getForObject("http://rating-data-service/ratingsdata/users/" + userId, UserRating.class);
-
-        return ratings.getUserRating().stream().map(rating -> {
-            // For each movie ID, call movie info service and get details
-            Movie movie = restTemplate.getForObject( "http://movie-info-service/movies/" + rating.getMovieId(),Movie.class);
-
-            // Put them all together
-            return new CatalogItem(movie.getName(), "Desc", rating.getRating());
-
-        })
+    UserRating ratings = userRatingInfo.getUserRating(userId);
+        return ratings.getUserRating().stream()
+                .map(rating -> movieInfo.getCatalogItem(rating))
                 .collect(Collectors.toList());
-
-
-
-
-
-
-
-
     }
+
 }
 
 

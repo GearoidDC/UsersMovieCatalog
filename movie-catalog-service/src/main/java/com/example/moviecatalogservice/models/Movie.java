@@ -2,15 +2,26 @@ package com.example.moviecatalogservice.models;
 
 public class Movie {
     private String movieId;
-    private String name;
+    private String title;
+    private String summary;
 
-    public Movie (){
+    public Movie() {
 
     }
 
-    public Movie(String movieId, String name) {
+
+    public Movie(String movieId, String title, String summary) {
         this.movieId = movieId;
-        this.name = name;
+        this.title = title;
+        this.summary = summary;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public String getMovieId() {
@@ -21,11 +32,11 @@ public class Movie {
         this.movieId = movieId;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String name) {
+        this.title = name;
     }
 }
